@@ -41,8 +41,8 @@ try
             case "CREATE":
                 break;
             case "READ":
-                string response = "a";
-                await stream.WriteAsync(Encoding.UTF8.GetBytes(response));
+                string exit = "a";
+                await stream.WriteAsync(Encoding.UTF8.GetBytes(exit));
                 break;
             case "UPDATE":
                 break;
