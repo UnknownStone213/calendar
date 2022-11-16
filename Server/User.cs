@@ -8,7 +8,7 @@ namespace Server
 {
     internal class User
     {
-        public User(string log, string pass) 
+        public User(string log, string pass)
         {
             login = log;
             password = pass;
@@ -25,6 +25,11 @@ namespace Server
             get { return password; }
             set { password = value; }
         }
-        public List<Note> notes;
+        public List<Note> notes = new List<Note>() { };
+        public string GetUser()
+        {
+            return "USER " + login + " " + password;
+        }
+
     }
 }

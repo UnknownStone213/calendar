@@ -8,14 +8,14 @@ namespace Server
 {
     internal class Note
     {
-        public Note(DateTime da, string cont, string capt)
+        public Note(DateTime da, string capt, string cont)
         {
             date = da;
-            content = cont;
             caption = capt;
+            content = cont;
         }
         DateTime date;
-        public DateTime Date 
+        public DateTime Date
         {
             get { return date; }
             set { date = value; }
@@ -32,5 +32,10 @@ namespace Server
             get { return content; }
             set { content = value; }
         }
+        public string GetNote()
+        {
+            return "NOTE " + date + " " + caption + " " + content;
+        }
+
     }
 }
