@@ -184,7 +184,6 @@ void ReceiveMessage()
     }
 }
 
-
 // void CreateUserNote() { }
 // void UpdateUserNote() { }
 // void DeleteUserNote() { }

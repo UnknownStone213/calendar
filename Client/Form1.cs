@@ -15,8 +15,10 @@ namespace Client
     {
         public string remoteAddress;
         public int remotePort;
+        int localPort;
 
         public UdpClient udpClient = new UdpClient();
+        User user = new User("0", "0"); // local user 0 0
 
         public Form1()
         {
@@ -25,11 +27,6 @@ namespace Client
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            int localPort;
-
-            User user = new User("0", "0"); // local user 0 0
-            // List<Note> notes = new List<Note>() { };
-
             try
             {
                 Random rng = new Random();
@@ -126,6 +123,7 @@ namespace Client
                                 MessageBox.Show("Error switch DEFAULT");
                                 break;
                         }
+                        listBoxNotes.Invoke(delegate { NotesUpdate(); }); // update my notes after receiving server response
                     }
                 }
                 catch (Exception ex)
@@ -155,6 +153,37 @@ namespace Client
             string message = "LOGIN " + login + " " + password;
             byte[] data = Encoding.Unicode.GetBytes(message);
             udpClient.Send(data, data.Length, remoteAddress, remotePort);
+        }
+
+        private void NotesUpdate()
+        {
+            // sort by date !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            for (int i = 0; i < user.notes.Count; i++)
+            {
+                Note noteBuffer;
+                int min = 0;
+                for (int ii = 0; ii < user.notes.Count; ii++)
+                {
+                    if (user.notes[min].Date < user.notes[ii].Date)
+                    {
+                        min = ii;
+                    }
+                }
+                if (min != i)
+                {
+                    noteBuffer = user.notes[i];
+                    user.notes[i] = user.notes[min];
+                    user.notes[min] = noteBuffer;
+                }
+
+            }
+
+            // update visually
+            listBoxNotes.Items.Clear();
+            for (int i = 0; i < user.notes.Count; i++)
+            {
+                listBoxNotes.Items.Add(user.notes[i].GetNote().Substring(5));
+            }
         }
 
         private void textBoxLogin_TextChanged(object sender, EventArgs e)
