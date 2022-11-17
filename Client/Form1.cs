@@ -28,7 +28,7 @@ namespace Client
         {
             int localPort;
 
-            User user = new User("0", "0"); // local user
+            User user = new User("0", "0"); // local user 0 0
             // List<Note> notes = new List<Note>() { };
 
             try
@@ -73,7 +73,7 @@ namespace Client
                                     // maybe send my local notes to server ???????????
                                     user = new User(messages[2], messages[3]);
 
-                                    //labelUser.Text = "Logged in successfully"; // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                                    labelUser.Invoke(delegate { labelUser.Text = "Logged in successfully"; });
 
                                     for (int iii = 0; iii < messages.Length; iii++)
                                     {
