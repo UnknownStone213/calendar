@@ -26,6 +26,7 @@ for (int i = 0; i < file.Length; i++)
         for (int ii = 3; ii < line.Split(' ', StringSplitOptions.RemoveEmptyEntries).Length; ii++)
         {
             content += line.Split(' ', StringSplitOptions.RemoveEmptyEntries)[ii];
+            content += " ";
         }
         Note bufferNote = new Note(Convert.ToDateTime(file[i].Split(' ', StringSplitOptions.RemoveEmptyEntries)[1]), file[i].Split(' ', StringSplitOptions.RemoveEmptyEntries)[2], content);
         users[users.Count - 1].notes.Add(bufferNote);
@@ -87,12 +88,11 @@ void SendMessage()
                                 if (messages[1] == users[i].Login && messages[2] == users[i].Password)
                                 {
                                     response = "LOGIN SUCCESS " + users[i].Login + " " + users[i].Password;
-                                    // give info about notes !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                                     for (int ii = 0; ii < users[i].notes.Count; ii++)
                                     {
-                                        response += "\n" + users[i].notes[ii].GetNote();
+                                        response += " " + users[i].notes[ii].GetNote();
                                     }
-                                    Console.WriteLine("Client {0}:{1} LOGIN SUCCESS", remoteAddress, remotePort);
+                                    Console.WriteLine("{0} Client {1}:{2} LOGIN SUCCESS", DateTime.Now.ToLongTimeString(), remoteAddress, remotePort);
                                     break;
                                 }
                                 else

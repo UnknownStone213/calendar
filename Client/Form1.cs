@@ -8,6 +8,7 @@ using System.Linq;
 using System.Threading;
 using System.Reflection.Metadata;
 using System.Text.RegularExpressions;
+using System.Reflection;
 
 namespace Client
 {
@@ -27,7 +28,7 @@ namespace Client
         {
             int localPort;
 
-            User user = new User("0", "0");
+            User user = new User("0", "0"); // local user
             // List<Note> notes = new List<Note>() { };
 
             try
@@ -58,8 +59,8 @@ namespace Client
                         Thread.Sleep(20); 
                         byte[] data = udpClient.Receive(ref remoteEndPoint);
                         string message = Encoding.Unicode.GetString(data);
-                        string[] messages = message.Split(' ', StringSplitOptions.RemoveEmptyEntries); // words
-                        MessageBox.Show("Received message:\n" + message); // checking server resoponse
+                        string[] messages = message.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries); // words
+                        MessageBox.Show("Received message:\n" + message); // check server resoponse
                         switch (messages[0])
                         {
                             case "LOGIN":
@@ -69,49 +70,33 @@ namespace Client
                                 } 
                                 else if (messages[1] == "SUCCESS")
                                 {
+                                    // maybe send my local notes to server ???????????
                                     user = new User(messages[2], messages[3]);
+
                                     //labelUser.Text = "Logged in successfully"; // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-                                    // !!!!!!!!!!
-
-                                    var notesAmount = Regex.Matches(message, "\n");
-                                    // +++ MessageBox.Show("notesAmount = " + notesAmount.Count);
-                                    for (int ii = 0; ii < notesAmount.Count; ii++) // getting notes
+                                    for (int iii = 0; iii < messages.Length; iii++)
                                     {
-                                        for (int iii = 0; iii < messages.Length; iii++)
+                                        if (messages[iii] == "NOTE")
                                         {
-                                            if (messages[iii] == "NOTE")
+                                            string content = "";
+                                            for (int iiii = iii + 3; iiii < messages.Length; iiii++)
                                             {
-                                                string content = "";
-                                                int index = iii + 3;
-                                                while (true)
+                                                if (messages[iiii] == "NOTE")
                                                 {
-                                                    if (messages[index] == "NOTE" || index == messages.Length)
-                                                    {
-                                                        break;
-                                                    }
-                                                    else
-                                                    {
-                                                        content += messages[index] + " ";
-                                                    }
+                                                    break;
                                                 }
-                                                user.notes.Add(new Note(DateTime.Parse(messages[iii + 1]), messages[iii + 2], content));
-                                                iii = index + 2;
+                                                else
+                                                {
+                                                    content += messages[iiii];
+                                                    content += " ";
+                                                }
                                             }
+                                            user.notes.Add(new Note(DateTime.Parse(messages[iii + 1]), messages[iii + 2], content));
                                         }
                                     }
 
-                                    // !!!!!!!!!!
-
-                                    MessageBox.Show("notes:" + user.notes.Count.ToString()); // check notes !!!!!
-                                    for (int i = 0; i < user.notes.Count; i++)
-                                    {
-                                        MessageBox.Show("note" + i + " = " + user.notes[i].GetNote());
-                                    }
-
                                     MessageBox.Show("LOGIN SUCCESS");
-
-                                    // maybe send my local notes to server ???????????
                                 }
                                 else if (message.Split(' ', StringSplitOptions.RemoveEmptyEntries)[1] == "FAIL")
                                 {
