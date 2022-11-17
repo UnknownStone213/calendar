@@ -70,9 +70,8 @@ namespace Client
                                 } 
                                 else if (messages[1] == "SUCCESS")
                                 {
-                                    // maybe send my local notes to server ???????????
+                                    // maybe send my local notes to user and on server  ????????????? just like user was adding notes offline but when registered notes were added
                                     user = new User(messages[2], messages[3]);
-
                                     labelUser.Invoke(delegate { labelUser.Text = "Logged in successfully"; });
 
                                     for (int iii = 0; iii < messages.Length; iii++)
@@ -95,8 +94,6 @@ namespace Client
                                             user.notes.Add(new Note(DateTime.Parse(messages[iii + 1]), messages[iii + 2], content));
                                         }
                                     }
-
-                                    MessageBox.Show("LOGIN SUCCESS");
                                 }
                                 else if (message.Split(' ', StringSplitOptions.RemoveEmptyEntries)[1] == "FAIL")
                                 {
@@ -105,6 +102,22 @@ namespace Client
                                 else
                                 {
                                     MessageBox.Show("Error switch LOGIN");
+                                }
+                                break;
+                            case "REGISTER":
+                                if (messages[1] == "SUCCESS")
+                                {
+                                    user = new User(textBoxLogin.Text, textBoxPassword.Text);
+                                    // add local notes to registered account ?????????????????? if yes i also should add notes to DB
+                                    labelUser.Invoke(delegate { labelUser.Text = "Registered successfully"; });
+                                }
+                                else if(messages[1] == "FAIL")
+                                {
+                                    MessageBox.Show("Failed to register (user already exists)");
+                                }
+                                else
+                                {
+                                    MessageBox.Show("Error switch REGISTER");
                                 }
                                 break;
                             case "INVALID":
@@ -129,7 +142,11 @@ namespace Client
 
         private void buttonRegister_Click(object sender, EventArgs e)
         {
-
+            string login = textBoxLogin.Text;
+            string password = textBoxPassword.Text;
+            string message = "REGISTER " + login + " " + password;
+            byte[] data = Encoding.Unicode.GetBytes(message);
+            udpClient.Send(data, data.Length, remoteAddress, remotePort);
         }
 
         private void buttonLogin_Click(object sender, EventArgs e)

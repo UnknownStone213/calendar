@@ -6,6 +6,7 @@ using System;
 using System.Linq;
 using System.Threading;
 using System.Reflection.Metadata;
+using Microsoft.Win32;
 
 List<User> users = new List<User>();
 
@@ -106,6 +107,29 @@ void SendMessage()
                             response = "LOGIN FAIL NOT 3 WORDS";
                         }
                         break;
+                    case "REGISTER":
+                        if (messages.Length == 3)
+                        {
+                            for (int i = 0; i < users.Count; i++)
+                            {
+                                if (users[i].Login == messages[1] && users[i].Password == messages[2])
+                                {
+                                    response = "REGISTER FAIL";
+                                    break;
+                                }
+                            }
+                            if (response != "REGISTER FAIL")
+                            {
+                                File.AppendAllText(path, "\nUSER " + messages[1] + " " + messages[2]);
+                                response = "REGISTER SUCCESS";
+                                Console.WriteLine("{0} Client {1}:{2} REGISTER SUCCESS", DateTime.Now.ToLongTimeString(), remoteAddress, remotePort);
+                            }
+                        }
+                        else
+                        {
+                            response = "REGISTER FAIL INCORRECT REQUEST";
+                        }
+                        break;
                     default:
                         response = "INVALID";
                         break;
@@ -124,7 +148,7 @@ void SendMessage()
     }
     catch (Exception ex)
     {
-        Console.WriteLine(ex.Message + "EXCEPTION void SendMessage()");
+        Console.WriteLine(ex.Message + "Error void SendMessage()");
     }
     finally
     {
@@ -152,7 +176,7 @@ void ReceiveMessage()
     }
     catch (Exception ex)
     {
-        Console.WriteLine(ex.Message + "EXCEPTION void void ReceiveMessage()");
+        Console.WriteLine(ex.Message + "Error void ReceiveMessage()");
     }
     finally
     {
