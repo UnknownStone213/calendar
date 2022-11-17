@@ -12,6 +12,7 @@ List<User> users = new List<User>();
 // read all users and their notes
 string path = @"C:\Work\vs\calendar\Server\db.txt";
 string[] file = File.ReadAllLines(path);
+
 for (int i = 0; i < file.Length; i++)
 {
     if (file[i].Split(' ', StringSplitOptions.RemoveEmptyEntries)[0] == "USER")
@@ -52,8 +53,7 @@ byte[] buffer = new byte[65000];
 
 try
 {
-    Console.Write("\nSet local port: ");
-    localPort = Int32.Parse(Console.ReadLine());
+    localPort = 8889;
     Thread receiveThread = new Thread(new ThreadStart(ReceiveMessage));
     receiveThread.Start();
     SendMessage();
@@ -85,8 +85,8 @@ void SendMessage()
                             {
                                 if (message.Split(' ')[1] == users[i].Login && message.Split(' ')[2] == users[i].Password)
                                 {
-                                    response = "LOGIN SUCCESS. USER " + users[i].Login + " PASSWORD " + users[i].Password;
-                                    Console.WriteLine("Client {0}:{1} LOGGED IN successfully", remoteAddress, remotePort);
+                                    response = "LOGIN SUCCESS " + users[i].Login + " " + users[i].Password;
+                                    Console.WriteLine("Client {0}:{1} LOGIN SUCCESS", remoteAddress, remotePort);
                                     // give info about notes !!!!!!!!!!!!!!!!!!!!!
                                     break;
                                 }
