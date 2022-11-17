@@ -34,7 +34,7 @@ namespace Server
         }
         public string GetNote()
         {
-            return "NOTE " + date + " " + caption + " " + content;
+            return "NOTE " + date.ToString("MM/dd/yyyy") + " " + caption + " " + content;
         }
 
     }

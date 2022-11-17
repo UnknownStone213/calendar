@@ -7,6 +7,7 @@ using System;
 using System.Linq;
 using System.Threading;
 using System.Reflection.Metadata;
+using System.Text.RegularExpressions;
 
 namespace Client
 {
@@ -26,8 +27,8 @@ namespace Client
         {
             int localPort;
 
-            User user;
-            List<Note> notes = new List<Note>() { };
+            User user = new User("0", "0");
+            // List<Note> notes = new List<Note>() { };
 
             try
             {
@@ -54,31 +55,78 @@ namespace Client
                 {
                     while (true)
                     {
+                        Thread.Sleep(20); 
                         byte[] data = udpClient.Receive(ref remoteEndPoint);
                         string message = Encoding.Unicode.GetString(data);
-                        MessageBox.Show("Received message: " + message);
-                        switch (message.Split(' ', StringSplitOptions.RemoveEmptyEntries)[0])
+                        string[] messages = message.Split(' ', StringSplitOptions.RemoveEmptyEntries); // words
+                        MessageBox.Show("Received message:\n" + message); // checking server resoponse
+                        switch (messages[0])
                         {
                             case "LOGIN":
-                                if (message.Split(' ', StringSplitOptions.RemoveEmptyEntries)[1] == "SUCCESS")
+                                if (user.Login != "0" && user.Password != "0")
                                 {
-                                    user = new User(message.Split(' ', StringSplitOptions.RemoveEmptyEntries)[2], message.Split(' ', StringSplitOptions.RemoveEmptyEntries)[3]);
-                                    //labelUser.Text = "Logged in successfully"; !!!!!!!!!!!!!!!!!!
-                                    buttonLogin.Enabled = false;
-                                    buttonRegister.Enabled = false;
-                                    MessageBox.Show("notes:" + user.notes.Count.ToString());
+                                    MessageBox.Show("You are already logged in");
+                                } 
+                                else if (messages[1] == "SUCCESS")
+                                {
+                                    user = new User(messages[2], messages[3]);
+                                    //labelUser.Text = "Logged in successfully"; // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+                                    // !!!!!!!!!!
+
+                                    var notesAmount = Regex.Matches(message, "\n");
+                                    // +++ MessageBox.Show("notesAmount = " + notesAmount.Count);
+                                    for (int ii = 0; ii < notesAmount.Count; ii++) // getting notes
+                                    {
+                                        for (int iii = 0; iii < messages.Length; iii++)
+                                        {
+                                            if (messages[iii] == "NOTE")
+                                            {
+                                                string content = "";
+                                                int index = iii + 3;
+                                                while (true)
+                                                {
+                                                    if (messages[index] == "NOTE" || index == messages.Length)
+                                                    {
+                                                        break;
+                                                    }
+                                                    else
+                                                    {
+                                                        content += messages[index] + " ";
+                                                    }
+                                                }
+                                                user.notes.Add(new Note(DateTime.Parse(messages[iii + 1]), messages[iii + 2], content));
+                                                iii = index + 2;
+                                            }
+                                        }
+                                    }
+
+                                    // !!!!!!!!!!
+
+                                    MessageBox.Show("notes:" + user.notes.Count.ToString()); // check notes !!!!!
+                                    for (int i = 0; i < user.notes.Count; i++)
+                                    {
+                                        MessageBox.Show("note" + i + " = " + user.notes[i].GetNote());
+                                    }
+
+                                    MessageBox.Show("LOGIN SUCCESS");
+
+                                    // maybe send my local notes to server ???????????
                                 }
                                 else if (message.Split(' ', StringSplitOptions.RemoveEmptyEntries)[1] == "FAIL")
                                 {
-                                    
+                                    MessageBox.Show("LOGIN FAIL");
                                 }
                                 else
                                 {
-                                    MessageBox.Show("Exception switch LOGIN");
+                                    MessageBox.Show("Error switch LOGIN");
                                 }
                                 break;
+                            case "INVALID":
+                                MessageBox.Show("Error incorrect request to server");
+                                break;
                             default:
-                                MessageBox.Show("Exception switch DEFAULT");
+                                MessageBox.Show("Error switch DEFAULT");
                                 break;
                         }
                     }

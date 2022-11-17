@@ -48,11 +48,11 @@
             // labelUser
             // 
             this.labelUser.AutoSize = true;
-            this.labelUser.Location = new System.Drawing.Point(1101, 49);
+            this.labelUser.Location = new System.Drawing.Point(1101, 60);
             this.labelUser.Name = "labelUser";
-            this.labelUser.Size = new System.Drawing.Size(142, 25);
+            this.labelUser.Size = new System.Drawing.Size(147, 25);
             this.labelUser.TabIndex = 1;
-            this.labelUser.Text = "Login or register";
+            this.labelUser.Text = "Log in or register";
             // 
             // labelLogin
             // 
@@ -96,7 +96,7 @@
             this.buttonLogin.Name = "buttonLogin";
             this.buttonLogin.Size = new System.Drawing.Size(112, 34);
             this.buttonLogin.TabIndex = 6;
-            this.buttonLogin.Text = "Login";
+            this.buttonLogin.Text = "Log in";
             this.buttonLogin.UseVisualStyleBackColor = true;
             this.buttonLogin.Click += new System.EventHandler(this.buttonLogin_Click);
             // 

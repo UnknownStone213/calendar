@@ -32,7 +32,7 @@ for (int i = 0; i < file.Length; i++)
     }
     else
     {
-        Console.WriteLine("Exception DB");
+        Console.WriteLine("Error DB");
     }
 }
 
@@ -73,21 +73,26 @@ void SendMessage()
         {
             if (remoteAddress != "" && remotePort != -1 && buffer != new byte[65000]) // if buffer = default > returns exception
             {
-                Thread.Sleep(1); // without this sleep message does not appear
+                Thread.Sleep(20);
                 string message = Encoding.Unicode.GetString(buffer);
+                string[] messages = message.Split(' ', StringSplitOptions.RemoveEmptyEntries); // words
                 string response = "response";
-                switch (message.Split(' ', StringSplitOptions.RemoveEmptyEntries)[0]) // first word
+                switch (messages[0]) // first word
                 {
-                    case "LOGIN":
-                        if (message.Split(' ', StringSplitOptions.RemoveEmptyEntries).Length == 3) // LOGIN USERNAME PASSWORD
+                    case "LOGIN": // LOGIN USERNAME PASSWORD
+                        if (messages.Length == 3)
                         {
                             for (int i = 0; i < users.Count; i++)
                             {
-                                if (message.Split(' ')[1] == users[i].Login && message.Split(' ')[2] == users[i].Password)
+                                if (messages[1] == users[i].Login && messages[2] == users[i].Password)
                                 {
                                     response = "LOGIN SUCCESS " + users[i].Login + " " + users[i].Password;
+                                    // give info about notes !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                                    for (int ii = 0; ii < users[i].notes.Count; ii++)
+                                    {
+                                        response += "\n" + users[i].notes[ii].GetNote();
+                                    }
                                     Console.WriteLine("Client {0}:{1} LOGIN SUCCESS", remoteAddress, remotePort);
-                                    // give info about notes !!!!!!!!!!!!!!!!!!!!!
                                     break;
                                 }
                                 else
@@ -98,7 +103,7 @@ void SendMessage()
                         }
                         else
                         {
-                            response = "LOGIN FAIL. Not 3 words. Write LOGIN USERNAME PASSWORD";
+                            response = "LOGIN FAIL NOT 3 WORDS";
                         }
                         break;
                     default:
@@ -107,6 +112,7 @@ void SendMessage()
                 }
                 byte[] data = Encoding.Unicode.GetBytes(response);
                 sender.Send(data, data.Length, remoteAddress, remotePort);
+                Console.WriteLine("{0} Send response {1}:{2}\n{3}", DateTime.Now.ToLongTimeString(), remoteAddress, remotePort, response);
 
                 // reset 
                 response = "";
@@ -133,14 +139,14 @@ void ReceiveMessage()
 
     try
     {
-        Console.WriteLine("Udp server started...");
+        Console.WriteLine("\nUdp server started...");
         while (true)
         {
             byte[] data = receiver.Receive(ref remoteEndPoint);
             remoteAddress = remoteEndPoint.Address.ToString();
             remotePort = remoteEndPoint.Port;
             string message = Encoding.Unicode.GetString(data);
-            Console.WriteLine("Received message from {0}:{1} {2}", remoteAddress, remotePort, message);
+            Console.WriteLine("{0} Received message {1}:{2}\n{3}", DateTime.Now.ToLongTimeString(), remoteAddress, remotePort, message);
             buffer = data;
         }
     }
