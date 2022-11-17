@@ -38,7 +38,7 @@ for (int i = 0; i < file.Length; i++)
     }
 }
 
-// check users and their notes
+// write to console users and their notes
 for (int i = 0; i < users.Count; i++)
 {
     Console.WriteLine(users[i].GetUser());
