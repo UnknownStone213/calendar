@@ -142,10 +142,10 @@ void SendMessage()
                             response = "CREATE SUCCESS " + currentNote.GetNote();
                         }
                         break;
-                    case "UPDATE":
+                    case "UPDATE": // 
                         // send client currentNote and make client rewrite user.notes[index]
                         break;
-                    case "DELETE":
+                    case "DELETE": // 
                         // send client currentNote to delete
                         break;
                     default:
@@ -237,9 +237,9 @@ void DBUpdate(string message) // read file, create/update/delete note, rewrite f
                 }
             }
             break;
-        case "DELETE":
+        case "UPDATE": // check 0 0 local user (dont write in database)
             break;
-        case "UPDATE":
+        case "DELETE": // check 0 0 local user (dont write in database)
             break;
         default:
             Console.WriteLine("Erroro void DBUpdate(string message) switch default");

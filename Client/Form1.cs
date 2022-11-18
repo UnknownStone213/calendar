@@ -13,11 +13,11 @@ namespace Client
 {
     public partial class Form1 : Form
     {
-        public string remoteAddress;
-        public int remotePort;
+        string remoteAddress;
+        int remotePort;
         int localPort;
 
-        public UdpClient udpClient = new UdpClient();
+        UdpClient udpClient = new UdpClient();
         User user = new User("0", "0"); // local user 0 0
         Note currentNote;
         int currentNoteIndex;
@@ -195,23 +195,30 @@ namespace Client
         {
             try
             {
-                currentNote = new Note(DateTime.Parse(textBoxNoteDate.Text), textBoxNoteCaption.Text, textBoxNoteContent.Text);
-                string message = "CREATE " + user.Login + " " + user.Password + " " + currentNote.GetNote();
-                byte[] data = Encoding.Unicode.GetBytes(message);
-                udpClient.Send(data, data.Length, remoteAddress, remotePort);
+                if (textBoxNoteCaption.Text.IndexOf(' ') != -1)
+                {
+                    MessageBox.Show("Note's caption can only be one word");
+                }
+                else 
+                {
+                    currentNote = new Note(DateTime.Parse(textBoxNoteDate.Text), textBoxNoteCaption.Text, textBoxNoteContent.Text);
+                    string message = "CREATE " + user.Login + " " + user.Password + " " + currentNote.GetNote();
+                    byte[] data = Encoding.Unicode.GetBytes(message);
+                    udpClient.Send(data, data.Length, remoteAddress, remotePort);
+                }
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Failed to create new note. Check your writing \n\n" + ex.Message);
+                MessageBox.Show("Failed to create new note. Check date \n\n" + ex.Message);
             }
         }
 
-        private void buttonNoteUpdate_Click(object sender, EventArgs e)
+        private void buttonNoteUpdate_Click(object sender, EventArgs e) // !!!!!!!
         {
 
         }
 
-        private void buttonNoteDelete_Click(object sender, EventArgs e)
+        private void buttonNoteDelete_Click(object sender, EventArgs e) // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         {
 
         }
