@@ -166,26 +166,7 @@ namespace Client
 
         private void NotesUpdate()
         {
-            // sort by date !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-            //for (int i = 0; i < user.notes.Count; i++)
-            //{
-            //    Note noteBuffer;
-            //    int min = 0;
-            //    for (int ii = 0; ii < user.notes.Count; ii++)
-            //    {
-            //        if (user.notes[min].Date < user.notes[ii].Date)
-            //        {
-            //            min = ii;
-            //        }
-            //    }
-            //    if (min != i)
-            //    {
-            //        noteBuffer = user.notes[i];
-            //        user.notes[i] = user.notes[min];
-            //        user.notes[min] = noteBuffer;
-            //    }
-            //}
-
+            // sort by date? if yes will i have problims with crudl?
             listBoxNotes.Items.Clear();
             for (int i = 0; i < user.notes.Count; i++)
             {
@@ -195,18 +176,16 @@ namespace Client
 
         private void buttonNoteCreate_Click(object sender, EventArgs e)
         {
-            string login = textBoxLogin.Text;
-            string password = textBoxPassword.Text;
             try
             {
                 currentNote = new Note(DateTime.Parse(textBoxNoteDate.Text), textBoxNoteCaption.Text, textBoxNoteContent.Text);
-                string message = "CREATE " + login + " " + password + " " + currentNote.GetNote();
+                string message = "CREATE " + user.Login + " " + user.Password + " " + currentNote.GetNote();
                 byte[] data = Encoding.Unicode.GetBytes(message);
                 udpClient.Send(data, data.Length, remoteAddress, remotePort);
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Failed to create new note. Check your writing \n" + ex.Message);
+                MessageBox.Show("Failed to create new note. Check your writing \n\n" + ex.Message);
             }
         }
 

@@ -139,6 +139,7 @@ void SendMessage()
                         else 
                         {
                             DBUpdate(message);
+                            Thread.Sleep(20);
                             response = "CREATE SUCCESS " + currentNote.GetNote();
                         }
                         break;
@@ -216,7 +217,7 @@ void DBUpdate(string message) // read file, create/update/delete note, rewrite f
     for (int i = 0; i < messages.Length; i++)
     {
         string content = "";
-        for (int ii = 7; ii < messages.Length; ii++)
+        for (int ii = 6; ii < messages.Length; ii++)
         {
             content += messages[ii];
             content += " ";
@@ -233,7 +234,6 @@ void DBUpdate(string message) // read file, create/update/delete note, rewrite f
             int createPosition = -1;
             for (int i = 0; i < file.Length; i++)
             {
-                Console.WriteLine("\nchecking \nlogin=" + file[i].Substring(5, currentUser.Login.Length) + "=" + currentUser.Login + "\npassword=" + file[i].Substring(6 + currentUser.Login.Length) + "=" + currentUser.Password);
                 if (file[i].Substring(5, currentUser.Login.Length) == currentUser.Login && file[i].Substring(6 + currentUser.Login.Length) == currentUser.Password) 
                 {
                     file[i] += "\n" + currentNote.GetNote();
@@ -246,7 +246,7 @@ void DBUpdate(string message) // read file, create/update/delete note, rewrite f
         case "UPDATE":
             break;
         default:
-            Console.WriteLine("Erroro void DBUpdate switch default");
+            Console.WriteLine("Erroro void DBUpdate(string message) switch default");
             break;
     }
 
@@ -255,12 +255,14 @@ void DBUpdate(string message) // read file, create/update/delete note, rewrite f
     File.AppendAllLines(path, file);
 
     // write on console users and their notes
-    for (int i = 0; i < users.Count; i++)
-    {
-        Console.WriteLine(users[i].GetUser());
-        for (int ii = 0; ii < users[i].notes.Count; ii++)
-        {
-            Console.WriteLine(users[i].notes[ii].GetNote());
-        }
-    }
+    //Console.WriteLine("\nDB was edited:");
+    //for (int i = 0; i < users.Count; i++)
+    //{
+    //    Console.WriteLine(users[i].GetUser());
+    //    for (int ii = 0; ii < users[i].notes.Count; ii++)
+    //    {
+    //        Console.WriteLine(users[i].notes[ii].GetNote());
+    //    }
+    //}
+    //Console.WriteLine("\n");
 }
