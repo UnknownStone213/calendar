@@ -19,6 +19,8 @@ namespace Client
 
         public UdpClient udpClient = new UdpClient();
         User user = new User("0", "0"); // local user 0 0
+        Note currentNote;
+        int currentNoteIndex;
 
         public Form1()
         {
@@ -56,7 +58,7 @@ namespace Client
                         byte[] data = udpClient.Receive(ref remoteEndPoint);
                         string message = Encoding.Unicode.GetString(data);
                         string[] messages = message.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries); // words
-                        MessageBox.Show("Received message:\n" + message); // check server resoponse
+                        // MessageBox.Show("Received message:\n" + message); // check server resoponse
                         switch (messages[0])
                         {
                             case "LOGIN":
@@ -70,6 +72,7 @@ namespace Client
                                     user = new User(messages[2], messages[3]);
                                     labelUser.Invoke(delegate { labelUser.Text = "Logged in successfully"; });
 
+                                    // receive notes
                                     for (int iii = 0; iii < messages.Length; iii++)
                                     {
                                         if (messages[iii] == "NOTE")
@@ -116,6 +119,12 @@ namespace Client
                                     MessageBox.Show("Error switch REGISTER");
                                 }
                                 break;
+                            case "CREATE":
+                                break;
+                            case "UPDATE":
+                                break;
+                            case "DELETE":
+                                break;
                             case "INVALID":
                                 MessageBox.Show("Error incorrect request to server");
                                 break;
@@ -158,27 +167,25 @@ namespace Client
         private void NotesUpdate()
         {
             // sort by date !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-            for (int i = 0; i < user.notes.Count; i++)
-            {
-                Note noteBuffer;
-                int min = 0;
-                for (int ii = 0; ii < user.notes.Count; ii++)
-                {
-                    if (user.notes[min].Date < user.notes[ii].Date)
-                    {
-                        min = ii;
-                    }
-                }
-                if (min != i)
-                {
-                    noteBuffer = user.notes[i];
-                    user.notes[i] = user.notes[min];
-                    user.notes[min] = noteBuffer;
-                }
+            //for (int i = 0; i < user.notes.Count; i++)
+            //{
+            //    Note noteBuffer;
+            //    int min = 0;
+            //    for (int ii = 0; ii < user.notes.Count; ii++)
+            //    {
+            //        if (user.notes[min].Date < user.notes[ii].Date)
+            //        {
+            //            min = ii;
+            //        }
+            //    }
+            //    if (min != i)
+            //    {
+            //        noteBuffer = user.notes[i];
+            //        user.notes[i] = user.notes[min];
+            //        user.notes[min] = noteBuffer;
+            //    }
+            //}
 
-            }
-
-            // update visually
             listBoxNotes.Items.Clear();
             for (int i = 0; i < user.notes.Count; i++)
             {
@@ -186,14 +193,45 @@ namespace Client
             }
         }
 
-        private void textBoxLogin_TextChanged(object sender, EventArgs e)
+        private void buttonNoteCreate_Click(object sender, EventArgs e)
+        {
+            string login = textBoxLogin.Text;
+            string password = textBoxPassword.Text;
+            try
+            {
+                currentNote = new Note(DateTime.Parse(textBoxNoteDate.Text), textBoxNoteCaption.Text, textBoxNoteContent.Text);
+                string message = "CREATE " + login + " " + password + " " + currentNote.GetNote();
+                byte[] data = Encoding.Unicode.GetBytes(message);
+                udpClient.Send(data, data.Length, remoteAddress, remotePort);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Failed to create new note. Check your writing \n" + ex.Message);
+            }
+        }
+
+        private void buttonNoteUpdate_Click(object sender, EventArgs e)
         {
 
         }
 
-        private void textBoxPassword_TextChanged(object sender, EventArgs e)
+        private void buttonNoteDelete_Click(object sender, EventArgs e)
         {
 
+        }
+
+        private void listBoxNotes_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            int currentNoteIndex = -1;
+            for (int i = 0; i < user.notes.Count; i++)
+            {
+                if (user.notes[i].GetNote().Substring(5) == listBoxNotes.SelectedItem.ToString())
+                {
+                    currentNoteIndex = i;
+                    break;
+                }
+            }
+            currentNote = user.notes[currentNoteIndex];
         }
     }
 }

@@ -14,6 +14,9 @@ List<User> users = new List<User>();
 string path = @"C:\Work\vs\calendar\Server\db.txt";
 string[] file = File.ReadAllLines(path);
 
+User currentUser;
+Note currentNote;
+
 for (int i = 0; i < file.Length; i++)
 {
     if (file[i].Split(' ', StringSplitOptions.RemoveEmptyEntries)[0] == "USER")
@@ -38,7 +41,7 @@ for (int i = 0; i < file.Length; i++)
     }
 }
 
-// write to console users and their notes
+// write on console users and their notes
 for (int i = 0; i < users.Count; i++)
 {
     Console.WriteLine(users[i].GetUser());
@@ -93,7 +96,6 @@ void SendMessage()
                                     {
                                         response += " " + users[i].notes[ii].GetNote();
                                     }
-                                    Console.WriteLine("{0} Client {1}:{2} LOGIN SUCCESS", DateTime.Now.ToLongTimeString(), remoteAddress, remotePort);
                                     break;
                                 }
                                 else
@@ -107,7 +109,7 @@ void SendMessage()
                             response = "LOGIN FAIL NOT 3 WORDS";
                         }
                         break;
-                    case "REGISTER":
+                    case "REGISTER": // REGISTER LOGIN PASSWORD
                         if (messages.Length == 3)
                         {
                             for (int i = 0; i < users.Count; i++)
@@ -122,13 +124,29 @@ void SendMessage()
                             {
                                 File.AppendAllText(path, "\nUSER " + messages[1] + " " + messages[2]);
                                 response = "REGISTER SUCCESS";
-                                Console.WriteLine("{0} Client {1}:{2} REGISTER SUCCESS", DateTime.Now.ToLongTimeString(), remoteAddress, remotePort);
                             }
                         }
                         else
                         {
                             response = "REGISTER FAIL INCORRECT REQUEST";
                         }
+                        break;
+                    case "CREATE": // CREATE LOGIN PASSWORD NOTE date caption content
+                        if (messages[3] != "NOTE")
+                        {
+                            response = "CREATE FAIL";
+                        }
+                        else 
+                        {
+                            DBUpdate(message);
+                            response = "CREATE SUCCESS " + currentNote.GetNote();
+                        }
+                        break;
+                    case "UPDATE":
+                        // send client currentNote and make client rewrite user.notes[index]
+                        break;
+                    case "DELETE":
+                        // send client currentNote to delete
                         break;
                     default:
                         response = "INVALID";
@@ -148,11 +166,12 @@ void SendMessage()
     }
     catch (Exception ex)
     {
-        Console.WriteLine(ex.Message + "Error void SendMessage()");
+        Console.WriteLine(ex.Message);
     }
     finally
     {
         sender.Close();
+        Console.WriteLine("\nsender closed");
     }
 }
 
@@ -163,7 +182,7 @@ void ReceiveMessage()
 
     try
     {
-        Console.WriteLine("\nUdp server started...");
+        Console.WriteLine("\nUdp server " + localPort.ToString() + " started...");
         while (true)
         {
             byte[] data = receiver.Receive(ref remoteEndPoint);
@@ -176,15 +195,72 @@ void ReceiveMessage()
     }
     catch (Exception ex)
     {
-        Console.WriteLine(ex.Message + "Error void ReceiveMessage()");
+        Console.WriteLine(ex.Message);
     }
     finally
     {
         receiver.Close();
+        Console.WriteLine("\nreceiver closed");
     }
 }
 
 // void CreateUserNote() { }
 // void UpdateUserNote() { }
 // void DeleteUserNote() { }
-// void UpdateDB() { }
+void DBUpdate(string message) // read file, create/update/delete note, rewrite file (local and then in db), show on console, send to user outside this method!!!
+{
+    string[] messages = message.Split(' ', StringSplitOptions.RemoveEmptyEntries); // words
+    currentUser = new User(messages[1], messages[2]);
+
+    currentNote = new Note(DateTime.Parse("10/10/2010"), "0", "0");
+    for (int i = 0; i < messages.Length; i++)
+    {
+        string content = "";
+        for (int ii = 7; ii < messages.Length; ii++)
+        {
+            content += messages[ii];
+            content += " ";
+        }
+        currentNote = new Note(Convert.ToDateTime(messages[4]), messages[5], content);
+    }
+    // Console.WriteLine("\ncurrentUser=" + currentUser.GetUser() + "\ncurrentNote=" + currentNote.GetNote());
+
+    // rewtire local variable file 
+    file = File.ReadAllLines(path);
+    switch (messages[0])
+    {
+        case "CREATE":
+            int createPosition = -1;
+            for (int i = 0; i < file.Length; i++)
+            {
+                Console.WriteLine("\nchecking \nlogin=" + file[i].Substring(5, currentUser.Login.Length) + "=" + currentUser.Login + "\npassword=" + file[i].Substring(6 + currentUser.Login.Length) + "=" + currentUser.Password);
+                if (file[i].Substring(5, currentUser.Login.Length) == currentUser.Login && file[i].Substring(6 + currentUser.Login.Length) == currentUser.Password) 
+                {
+                    file[i] += "\n" + currentNote.GetNote();
+                    break;
+                }
+            }
+            break;
+        case "DELETE":
+            break;
+        case "UPDATE":
+            break;
+        default:
+            Console.WriteLine("Erroro void DBUpdate switch default");
+            break;
+    }
+
+    // rewrite file db
+    File.WriteAllText(path, string.Empty);
+    File.AppendAllLines(path, file);
+
+    // write on console users and their notes
+    for (int i = 0; i < users.Count; i++)
+    {
+        Console.WriteLine(users[i].GetUser());
+        for (int ii = 0; ii < users[i].notes.Count; ii++)
+        {
+            Console.WriteLine(users[i].notes[ii].GetNote());
+        }
+    }
+}

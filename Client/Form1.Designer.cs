@@ -45,8 +45,9 @@
             this.textBoxNoteCaption = new System.Windows.Forms.TextBox();
             this.textBoxNoteContent = new System.Windows.Forms.TextBox();
             this.buttonNoteCreate = new System.Windows.Forms.Button();
-            this.buttonUpdate = new System.Windows.Forms.Button();
-            this.buttonDelete = new System.Windows.Forms.Button();
+            this.buttonNoteUpdate = new System.Windows.Forms.Button();
+            this.buttonNoteDelete = new System.Windows.Forms.Button();
+            this.monthCalendar1 = new System.Windows.Forms.MonthCalendar();
             this.SuspendLayout();
             // 
             // textBoxLogin
@@ -55,7 +56,6 @@
             this.textBoxLogin.Name = "textBoxLogin";
             this.textBoxLogin.Size = new System.Drawing.Size(150, 31);
             this.textBoxLogin.TabIndex = 0;
-            this.textBoxLogin.TextChanged += new System.EventHandler(this.textBoxLogin_TextChanged);
             // 
             // labelUser
             // 
@@ -90,7 +90,6 @@
             this.textBoxPassword.Name = "textBoxPassword";
             this.textBoxPassword.Size = new System.Drawing.Size(150, 31);
             this.textBoxPassword.TabIndex = 4;
-            this.textBoxPassword.TextChanged += new System.EventHandler(this.textBoxPassword_TextChanged);
             // 
             // buttonRegister
             // 
@@ -120,6 +119,7 @@
             this.listBoxNotes.Name = "listBoxNotes";
             this.listBoxNotes.Size = new System.Drawing.Size(394, 254);
             this.listBoxNotes.TabIndex = 8;
+            this.listBoxNotes.SelectedIndexChanged += new System.EventHandler(this.listBoxNotes_SelectedIndexChanged);
             // 
             // labelNotes
             // 
@@ -196,32 +196,42 @@
             this.buttonNoteCreate.TabIndex = 17;
             this.buttonNoteCreate.Text = "Create";
             this.buttonNoteCreate.UseVisualStyleBackColor = true;
+            this.buttonNoteCreate.Click += new System.EventHandler(this.buttonNoteCreate_Click);
             // 
-            // buttonUpdate
+            // buttonNoteUpdate
             // 
-            this.buttonUpdate.Location = new System.Drawing.Point(130, 346);
-            this.buttonUpdate.Name = "buttonUpdate";
-            this.buttonUpdate.Size = new System.Drawing.Size(112, 34);
-            this.buttonUpdate.TabIndex = 18;
-            this.buttonUpdate.Text = "Update";
-            this.buttonUpdate.UseVisualStyleBackColor = true;
+            this.buttonNoteUpdate.Location = new System.Drawing.Point(130, 346);
+            this.buttonNoteUpdate.Name = "buttonNoteUpdate";
+            this.buttonNoteUpdate.Size = new System.Drawing.Size(112, 34);
+            this.buttonNoteUpdate.TabIndex = 18;
+            this.buttonNoteUpdate.Text = "Update";
+            this.buttonNoteUpdate.UseVisualStyleBackColor = true;
+            this.buttonNoteUpdate.Click += new System.EventHandler(this.buttonNoteUpdate_Click);
             // 
-            // buttonDelete
+            // buttonNoteDelete
             // 
-            this.buttonDelete.Location = new System.Drawing.Point(248, 346);
-            this.buttonDelete.Name = "buttonDelete";
-            this.buttonDelete.Size = new System.Drawing.Size(112, 34);
-            this.buttonDelete.TabIndex = 19;
-            this.buttonDelete.Text = "Delete";
-            this.buttonDelete.UseVisualStyleBackColor = true;
+            this.buttonNoteDelete.Location = new System.Drawing.Point(248, 346);
+            this.buttonNoteDelete.Name = "buttonNoteDelete";
+            this.buttonNoteDelete.Size = new System.Drawing.Size(112, 34);
+            this.buttonNoteDelete.TabIndex = 19;
+            this.buttonNoteDelete.Text = "Delete";
+            this.buttonNoteDelete.UseVisualStyleBackColor = true;
+            this.buttonNoteDelete.Click += new System.EventHandler(this.buttonNoteDelete_Click);
+            // 
+            // monthCalendar1
+            // 
+            this.monthCalendar1.Location = new System.Drawing.Point(883, 346);
+            this.monthCalendar1.Name = "monthCalendar1";
+            this.monthCalendar1.TabIndex = 20;
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(10F, 25F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1247, 533);
-            this.Controls.Add(this.buttonDelete);
-            this.Controls.Add(this.buttonUpdate);
+            this.ClientSize = new System.Drawing.Size(1247, 654);
+            this.Controls.Add(this.monthCalendar1);
+            this.Controls.Add(this.buttonNoteDelete);
+            this.Controls.Add(this.buttonNoteUpdate);
             this.Controls.Add(this.buttonNoteCreate);
             this.Controls.Add(this.textBoxNoteContent);
             this.Controls.Add(this.textBoxNoteCaption);
@@ -266,7 +276,8 @@
         private TextBox textBoxNoteCaption;
         private TextBox textBoxNoteContent;
         private Button buttonNoteCreate;
-        private Button buttonUpdate;
-        private Button buttonDelete;
+        private Button buttonNoteUpdate;
+        private Button buttonNoteDelete;
+        private MonthCalendar monthCalendar1;
     }
 }
