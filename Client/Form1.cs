@@ -120,6 +120,23 @@ namespace Client
                                 }
                                 break;
                             case "CREATE":
+                                if (messages[1] == "SUCCESS")
+                                {
+                                    string content = "";
+                                    for (int i = 5; i < messages.Length; i++)
+                                    {
+                                        content += messages[i] + " ";
+                                    }
+                                    user.notes.Add(new Note(DateTime.Parse(messages[3]), messages[4], content));
+                                }
+                                else if (messages[1] == "FAIL")
+                                {
+                                    MessageBox.Show("Failed to create new note. (check your writing)");
+                                }
+                                else
+                                {
+                                    MessageBox.Show("Error switch CREATE");
+                                }
                                 break;
                             case "UPDATE":
                                 break;
@@ -166,7 +183,7 @@ namespace Client
 
         private void NotesUpdate()
         {
-            // sort by date? if yes will i have problims with crudl?
+            // sort by date? if yes will i have problems with crudl?
             listBoxNotes.Items.Clear();
             for (int i = 0; i < user.notes.Count; i++)
             {

@@ -139,7 +139,6 @@ void SendMessage()
                         else 
                         {
                             DBUpdate(message);
-                            Thread.Sleep(20);
                             response = "CREATE SUCCESS " + currentNote.GetNote();
                         }
                         break;
@@ -205,9 +204,6 @@ void ReceiveMessage()
     }
 }
 
-// void CreateUserNote() { }
-// void UpdateUserNote() { }
-// void DeleteUserNote() { }
 void DBUpdate(string message) // read file, create/update/delete note, rewrite file (local and then in db), show on console, send to user outside this method!!!
 {
     string[] messages = message.Split(' ', StringSplitOptions.RemoveEmptyEntries); // words
@@ -266,3 +262,7 @@ void DBUpdate(string message) // read file, create/update/delete note, rewrite f
     //}
     //Console.WriteLine("\n");
 }
+
+// void CreateUserNote() { }
+// void UpdateUserNote() { }
+// void DeleteUserNote() { }
