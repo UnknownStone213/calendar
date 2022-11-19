@@ -134,7 +134,7 @@
             // labelNote
             // 
             this.labelNote.AutoSize = true;
-            this.labelNote.Location = new System.Drawing.Point(118, 47);
+            this.labelNote.Location = new System.Drawing.Point(137, 47);
             this.labelNote.Name = "labelNote";
             this.labelNote.Size = new System.Drawing.Size(51, 25);
             this.labelNote.TabIndex = 10;
@@ -145,9 +145,9 @@
             this.labelNoteDate.AutoSize = true;
             this.labelNoteDate.Location = new System.Drawing.Point(12, 101);
             this.labelNoteDate.Name = "labelNoteDate";
-            this.labelNoteDate.Size = new System.Drawing.Size(49, 25);
+            this.labelNoteDate.Size = new System.Drawing.Size(114, 25);
             this.labelNoteDate.TabIndex = 11;
-            this.labelNoteDate.Text = "Date";
+            this.labelNoteDate.Text = "Date (m/d/y)";
             // 
             // labelNoteCaption
             // 
@@ -169,21 +169,21 @@
             // 
             // textBoxNoteDate
             // 
-            this.textBoxNoteDate.Location = new System.Drawing.Point(118, 98);
+            this.textBoxNoteDate.Location = new System.Drawing.Point(137, 98);
             this.textBoxNoteDate.Name = "textBoxNoteDate";
             this.textBoxNoteDate.Size = new System.Drawing.Size(223, 31);
             this.textBoxNoteDate.TabIndex = 14;
             // 
             // textBoxNoteCaption
             // 
-            this.textBoxNoteCaption.Location = new System.Drawing.Point(118, 148);
+            this.textBoxNoteCaption.Location = new System.Drawing.Point(137, 148);
             this.textBoxNoteCaption.Name = "textBoxNoteCaption";
             this.textBoxNoteCaption.Size = new System.Drawing.Size(223, 31);
             this.textBoxNoteCaption.TabIndex = 15;
             // 
             // textBoxNoteContent
             // 
-            this.textBoxNoteContent.Location = new System.Drawing.Point(118, 198);
+            this.textBoxNoteContent.Location = new System.Drawing.Point(137, 198);
             this.textBoxNoteContent.Multiline = true;
             this.textBoxNoteContent.Name = "textBoxNoteContent";
             this.textBoxNoteContent.Size = new System.Drawing.Size(223, 131);

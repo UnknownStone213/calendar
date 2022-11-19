@@ -56,8 +56,8 @@ namespace Client
                     {
                         Thread.Sleep(20); 
                         byte[] data = udpClient.Receive(ref remoteEndPoint);
-                        string message = Encoding.Unicode.GetString(data);
-                        string[] messages = message.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries); // words
+                        string message = Encoding.Unicode.GetString(data); // message received from server
+                        string[] messages = message.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries); // message split into words
                         // MessageBox.Show("Received message:\n" + message); // check server resoponse
                         switch (messages[0])
                         {
@@ -73,26 +73,30 @@ namespace Client
                                     labelUser.Invoke(delegate { labelUser.Text = "Logged in successfully"; });
 
                                     // receive notes
-                                    for (int iii = 0; iii < messages.Length; iii++)
+                                    //string content = message.Substring(5 + messages[1].Length + 1 + messages[2].Length + 1 + 5 + 10 + 1 + messages[5].Length, message.Length);
+
+                                    for (int i = 0; i < messages.Length; i++)
                                     {
-                                        if (messages[iii] == "NOTE")
+                                        if (messages[i] == "NOTE")
                                         {
                                             string content = "";
-                                            for (int iiii = iii + 3; iiii < messages.Length; iiii++)
+                                            for (int ii = i + 3; ii < messages.Length; ii++)
                                             {
-                                                if (messages[iiii] == "NOTE")
+                                                if (messages[ii] == "NOTE")
                                                 {
                                                     break;
                                                 }
                                                 else
                                                 {
-                                                    content += messages[iiii];
+                                                    content += messages[ii];
                                                     content += " ";
                                                 }
                                             }
-                                            user.notes.Add(new Note(DateTime.Parse(messages[iii + 1]), messages[iii + 2], content));
+                                            user.notes.Add(new Note(DateTime.Parse(messages[i + 1]), messages[i + 2], content));
                                         }
                                     }
+
+                                    //user.notes.Add(new Note(DateTime.Parse(messages[i + 1]), messages[i + 2], content));
                                 }
                                 else if (message.Split(' ', StringSplitOptions.RemoveEmptyEntries)[1] == "FAIL")
                                 {
@@ -205,6 +209,7 @@ namespace Client
                     string message = "CREATE " + user.Login + " " + user.Password + " " + currentNote.GetNote();
                     byte[] data = Encoding.Unicode.GetBytes(message);
                     udpClient.Send(data, data.Length, remoteAddress, remotePort);
+
                     // clean up Note space on the left
                     textBoxNoteDate.Invoke(delegate { textBoxNoteDate.Text = ""; });
                     textBoxNoteCaption.Invoke(delegate { textBoxNoteCaption.Text = ""; });
@@ -224,25 +229,49 @@ namespace Client
 
         private void buttonNoteDelete_Click(object sender, EventArgs e) // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         {
+            if (listBoxNotes.SelectedItem != null && listBoxNotes.SelectedIndex != -1)
+            {
+                // delete on server
+                string message = "DELETE " + user.Login + " " + user.Password + " " + currentNote.GetNote();
+                byte[] data = Encoding.Unicode.GetBytes(message);
+                udpClient.Send(data, data.Length, remoteAddress, remotePort);
 
+                // delete on client
+                for (int i = 0; i < user.notes.Count; i++)
+                {
+                    if (currentNote == user.notes[i])
+                    {
+                        user.notes.RemoveAt(i);
+                        break;
+                    }
+                }
+                textBoxNoteDate.Invoke(delegate { textBoxNoteDate.Text = ""; });
+                textBoxNoteCaption.Invoke(delegate { textBoxNoteCaption.Text = ""; });
+                textBoxNoteContent.Invoke(delegate { textBoxNoteContent.Text = ""; });
+            }
+            NotesUpdate();
         }
 
         private void listBoxNotes_SelectedIndexChanged(object sender, EventArgs e)
         {
-            int currentNoteIndex = -1;
-            for (int i = 0; i < user.notes.Count; i++)
+            if (listBoxNotes.SelectedItem != null)
             {
-                if (user.notes[i].GetNote().Substring(5) == listBoxNotes.SelectedItem.ToString())
+                currentNoteIndex = -1;
+                for (int i = 0; i < user.notes.Count; i++)
                 {
-                    currentNoteIndex = i;
-                    break;
+                    if (user.notes[i].GetNote().Substring(5) == listBoxNotes.SelectedItem.ToString()) // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                    {
+                        currentNoteIndex = i;
+                        break;
+                    }
                 }
+                currentNote = user.notes[currentNoteIndex];
+
+                // show selected note on the left
+                textBoxNoteDate.Invoke(delegate { textBoxNoteDate.Text = user.notes[currentNoteIndex].Date.ToString(); });
+                textBoxNoteCaption.Invoke(delegate { textBoxNoteCaption.Text = user.notes[currentNoteIndex].Caption; });
+                textBoxNoteContent.Invoke(delegate { textBoxNoteContent.Text = user.notes[currentNoteIndex].Content; });
             }
-            currentNote = user.notes[currentNoteIndex];
-            // show selected note on the left
-            textBoxNoteDate.Invoke(delegate { textBoxNoteDate.Text = user.notes[currentNoteIndex].Date.ToString(); });
-            textBoxNoteCaption.Invoke(delegate { textBoxNoteCaption.Text = user.notes[currentNoteIndex].Caption; });
-            textBoxNoteContent.Invoke(delegate { textBoxNoteContent.Text = user.notes[currentNoteIndex].Content; });
         }
 
         private void buttonLogout_Click(object sender, EventArgs e)

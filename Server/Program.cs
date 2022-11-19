@@ -19,7 +19,11 @@ Note currentNote;
 
 for (int i = 0; i < file.Length; i++)
 {
-    if (file[i].Split(' ', StringSplitOptions.RemoveEmptyEntries)[0] == "USER")
+    if (file[i] == string.Empty)
+    {
+
+    } 
+    else if (file[i].Split(' ', StringSplitOptions.RemoveEmptyEntries)[0] == "USER")
     {
         users.Add(new User(file[i].Split(' ', StringSplitOptions.RemoveEmptyEntries)[1], file[i].Split(' ', StringSplitOptions.RemoveEmptyEntries)[2]));
     }
@@ -145,8 +149,16 @@ void SendMessage()
                     case "UPDATE": // 
                         // send client currentNote and make client rewrite user.notes[index]
                         break;
-                    case "DELETE": // 
-                        // send client currentNote to delete
+                    case "DELETE": // DELETE LOGIN PASSWORD NOTE date caption content
+                        if (messages[3] != "NOTE")
+                        {
+                            response = "DELETE FAIL";
+                        }
+                        else
+                        {
+                            DBUpdate(message);
+                            response = "DELETE SUCCESS " + currentNote.GetNote();
+                        }
                         break;
                     default:
                         response = "INVALID";
@@ -204,7 +216,7 @@ void ReceiveMessage()
     }
 }
 
-void DBUpdate(string message) // read file, rewrite file (local and then in db)
+void DBUpdate(string message) // read file, rewrite local variable, rewrite db
 {
     string[] messages = message.Split(' ', StringSplitOptions.RemoveEmptyEntries); // words
     currentUser = new User(messages[1], messages[2]);
@@ -226,7 +238,6 @@ void DBUpdate(string message) // read file, rewrite file (local and then in db)
     switch (messages[0])
     {
         case "CREATE":
-            int createPosition = -1;
             for (int i = 0; i < file.Length; i++)
             {
                 if (file[i].Substring(5, currentUser.Login.Length) == currentUser.Login && file[i].Substring(6 + currentUser.Login.Length) == currentUser.Password) 
@@ -236,30 +247,62 @@ void DBUpdate(string message) // read file, rewrite file (local and then in db)
                 }
             }
             break;
-        case "UPDATE": // check 0 0 local user (dont write in database)
+        case "UPDATE":
             break;
-        case "DELETE": // check 0 0 local user (dont write in database)
+        case "DELETE":
+            for (int i = 0; i < file.Length; i++)
+            {
+                if (file[i] != string.Empty && file[i].Substring(0, 4) == "USER")
+                {
+                    if (file[i].Substring(5, currentUser.Login.Length) == currentUser.Login && file[i].Substring(6 + currentUser.Login.Length) == currentUser.Password)
+                    {
+                        for (int ii = i + 1; ii < file.Length; ii++)
+                        {
+                            try
+                            {
+                                // lase && ( _ || _ ) is me solving problem with extra space at the end of currentNote.Content
+                                if (currentNote.Date.ToString("MM/dd/yyyy") == file[ii].Substring(5, 10) && currentNote.Caption == file[ii].Substring(16, currentNote.Caption.Length) && (currentNote.Content == file[ii].Substring(17 + currentNote.Caption.Length) || currentNote.Content.Substring(0, currentNote.Content.Length - 1) == file[ii].Substring(17 + currentNote.Caption.Length)))
+                                {
+                                    file[ii] = string.Empty;
+                                    break;
+                                }
+                            }
+                            catch (Exception)
+                            {
+
+                            }
+                        }
+                        break;
+                    }
+                }
+            }
             break;
         default:
             Console.WriteLine("Erroro void DBUpdate(string message) switch default");
             break;
     }
 
-    // rewrite file db
+    // rewrite db 
+    int amountNotEmpty = 0;
+    for (int i = 0; i < file.Length; i++)
+    {
+        if (file[i] != string.Empty)
+        {
+            amountNotEmpty++;
+        }
+    }
+    string[] fileBuffer = new string[amountNotEmpty];
+    int index = 0;
+    for (int i = 0; i < file.Length; i++) 
+    {
+        if (file[i] != string.Empty)
+        {
+            fileBuffer[index] = file[i];
+            index++;
+        }
+    }
     File.WriteAllText(path, string.Empty);
-    File.AppendAllLines(path, file);
-
-    // write on console users and their notes
-    //Console.WriteLine("\nDB was edited:");
-    //for (int i = 0; i < users.Count; i++)
-    //{
-    //    Console.WriteLine(users[i].GetUser());
-    //    for (int ii = 0; ii < users[i].notes.Count; ii++)
-    //    {
-    //        Console.WriteLine(users[i].notes[ii].GetNote());
-    //    }
-    //}
-    //Console.WriteLine("\n");
+    File.AppendAllLines(path, fileBuffer);
 }
 
 // void CreateUserNote() { }
