@@ -18,7 +18,7 @@ namespace Client
         int localPort;
 
         UdpClient udpClient = new UdpClient();
-        User user = new User("0", "0"); // local user 0 0
+        User user = new User("0", "0"); // local user 0 0 (you can crudl notes while not registered)
         Note currentNote;
         int currentNoteIndex;
 
@@ -59,7 +59,7 @@ namespace Client
                         string message = Encoding.Unicode.GetString(data); // message received from server
                         string[] messages = message.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries); // message split into words
                         // MessageBox.Show("Received message:\n" + message); // check server resoponse
-                        switch (messages[0])
+                        switch (messages[0]) // first word
                         {
                             case "LOGIN":
                                 if (user.Login != "0" && user.Password != "0")
@@ -73,8 +73,7 @@ namespace Client
                                     labelUser.Invoke(delegate { labelUser.Text = "Logged in successfully"; });
 
                                     // receive notes
-                                    //string content = message.Substring(5 + messages[1].Length + 1 + messages[2].Length + 1 + 5 + 10 + 1 + messages[5].Length, message.Length);
-
+                                    //string content = message.Substring(5 + messages[1].Length + 1 + messages[2].Length + 1 + 5 + 10 + 1 + messages[5].Length, message.Length - ...);
                                     for (int i = 0; i < messages.Length; i++)
                                     {
                                         if (messages[i] == "NOTE")
@@ -95,8 +94,6 @@ namespace Client
                                             user.notes.Add(new Note(DateTime.Parse(messages[i + 1]), messages[i + 2], content));
                                         }
                                     }
-
-                                    //user.notes.Add(new Note(DateTime.Parse(messages[i + 1]), messages[i + 2], content));
                                 }
                                 else if (message.Split(' ', StringSplitOptions.RemoveEmptyEntries)[1] == "FAIL")
                                 {
@@ -111,7 +108,7 @@ namespace Client
                                 if (messages[1] == "SUCCESS")
                                 {
                                     user = new User(textBoxLogin.Text, textBoxPassword.Text);
-                                    // add local notes to registered account ?????????????????? if yes i also should add notes to DB
+                                    // should i add local notes to registered account? if yes i also should add notes to DB
                                     labelUser.Invoke(delegate { labelUser.Text = "Registered successfully"; });
                                 }
                                 else if(messages[1] == "FAIL")
@@ -187,7 +184,7 @@ namespace Client
 
         private void NotesUpdate()
         {
-            // sort by date? if yes will i have problems with crudl?
+            // should i add sort by date? if yes will i have problems with crudl?
             listBoxNotes.Items.Clear();
             for (int i = 0; i < user.notes.Count; i++)
             {
@@ -222,12 +219,12 @@ namespace Client
             }
         }
 
-        private void buttonNoteUpdate_Click(object sender, EventArgs e) // !!!!!!!
+        private void buttonNoteUpdate_Click(object sender, EventArgs e) // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         {
 
         }
 
-        private void buttonNoteDelete_Click(object sender, EventArgs e) // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        private void buttonNoteDelete_Click(object sender, EventArgs e) 
         {
             if (listBoxNotes.SelectedItem != null && listBoxNotes.SelectedIndex != -1)
             {
@@ -254,12 +251,12 @@ namespace Client
 
         private void listBoxNotes_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (listBoxNotes.SelectedItem != null)
+            if (listBoxNotes.SelectedItem != null) // prevent exception if you press on listbox itself (not on item in it)
             {
                 currentNoteIndex = -1;
                 for (int i = 0; i < user.notes.Count; i++)
                 {
-                    if (user.notes[i].GetNote().Substring(5) == listBoxNotes.SelectedItem.ToString()) // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                    if (user.notes[i].GetNote().Substring(5) == listBoxNotes.SelectedItem.ToString()) 
                     {
                         currentNoteIndex = i;
                         break;

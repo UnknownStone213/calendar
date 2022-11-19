@@ -147,7 +147,7 @@
             this.labelNoteDate.Name = "labelNoteDate";
             this.labelNoteDate.Size = new System.Drawing.Size(114, 25);
             this.labelNoteDate.TabIndex = 11;
-            this.labelNoteDate.Text = "Date (m/d/y)";
+            this.labelNoteDate.Text = "Date (M/d/y)";
             // 
             // labelNoteCaption
             // 

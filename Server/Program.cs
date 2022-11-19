@@ -83,8 +83,8 @@ void SendMessage()
             if (remoteAddress != "" && remotePort != -1 && buffer != new byte[65000]) // if buffer = default > returns exception
             {
                 Thread.Sleep(20);
-                string message = Encoding.Unicode.GetString(buffer);
-                string[] messages = message.Split(' ', StringSplitOptions.RemoveEmptyEntries); // words
+                string message = Encoding.Unicode.GetString(buffer); // client request
+                string[] messages = message.Split(' ', StringSplitOptions.RemoveEmptyEntries); // client request split in words
                 string response = "response";
                 switch (messages[0]) // first word
                 {
@@ -146,7 +146,7 @@ void SendMessage()
                             response = "CREATE SUCCESS " + currentNote.GetNote();
                         }
                         break;
-                    case "UPDATE": // 
+                    case "UPDATE": // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                         // send client currentNote and make client rewrite user.notes[index]
                         break;
                     case "DELETE": // DELETE LOGIN PASSWORD NOTE date caption content
@@ -168,7 +168,7 @@ void SendMessage()
                 sender.Send(data, data.Length, remoteAddress, remotePort);
                 Console.WriteLine("{0} Send response {1}:{2}\n{3}", DateTime.Now.ToLongTimeString(), remoteAddress, remotePort, response);
 
-                // reset 
+                // reset and wait for the next client-request
                 response = "";
                 remoteAddress = "";
                 remotePort = -1;
@@ -216,9 +216,9 @@ void ReceiveMessage()
     }
 }
 
-void DBUpdate(string message) // read file, rewrite local variable, rewrite db
+void DBUpdate(string message) // read db, rewrite variable, rewrite db
 {
-    string[] messages = message.Split(' ', StringSplitOptions.RemoveEmptyEntries); // words
+    string[] messages = message.Split(' ', StringSplitOptions.RemoveEmptyEntries); // client's request split in words
     currentUser = new User(messages[1], messages[2]);
 
     currentNote = new Note(DateTime.Parse("10/10/2010"), "0", "0");
@@ -233,7 +233,7 @@ void DBUpdate(string message) // read file, rewrite local variable, rewrite db
         currentNote = new Note(Convert.ToDateTime(messages[4]), messages[5], content);
     }
 
-    // rewtire local variable file 
+    // rewtire variable string[] file 
     file = File.ReadAllLines(path);
     switch (messages[0])
     {
@@ -260,7 +260,7 @@ void DBUpdate(string message) // read file, rewrite local variable, rewrite db
                         {
                             try
                             {
-                                // lase && ( _ || _ ) is me solving problem with extra space at the end of currentNote.Content
+                                // last && ( _ || _ ) is me solving problem with extra space at the end of currentNote.Content
                                 if (currentNote.Date.ToString("MM/dd/yyyy") == file[ii].Substring(5, 10) && currentNote.Caption == file[ii].Substring(16, currentNote.Caption.Length) && (currentNote.Content == file[ii].Substring(17 + currentNote.Caption.Length) || currentNote.Content.Substring(0, currentNote.Content.Length - 1) == file[ii].Substring(17 + currentNote.Caption.Length)))
                                 {
                                     file[ii] = string.Empty;
@@ -304,7 +304,3 @@ void DBUpdate(string message) // read file, rewrite local variable, rewrite db
     File.WriteAllText(path, string.Empty);
     File.AppendAllLines(path, fileBuffer);
 }
-
-// void CreateUserNote() { }
-// void UpdateUserNote() { }
-// void DeleteUserNote() { }
