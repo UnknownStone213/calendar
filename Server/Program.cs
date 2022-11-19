@@ -8,7 +8,7 @@ using System.Threading;
 using System.Reflection.Metadata;
 using Microsoft.Win32;
 
-List<User> users = new List<User>();
+List<User> users = new List<User>() { };
 
 // read all users and their notes
 string path = @"C:\Work\vs\calendar\Server\db.txt";
@@ -17,44 +17,7 @@ string[] file = File.ReadAllLines(path);
 User currentUser;
 Note currentNote = new Note(DateTime.Parse("10/10/2010"), "0", "0");
 
-for (int i = 0; i < file.Length; i++)
-{
-    if (file[i] == string.Empty)
-    {
-
-    } 
-    else if (file[i].Split(' ', StringSplitOptions.RemoveEmptyEntries)[0] == "USER")
-    {
-        users.Add(new User(file[i].Split(' ', StringSplitOptions.RemoveEmptyEntries)[1], file[i].Split(' ', StringSplitOptions.RemoveEmptyEntries)[2]));
-    }
-    else if (file[i].Split(' ', StringSplitOptions.RemoveEmptyEntries)[0] == "NOTE")
-    {
-        string line = file[i];
-        string content = "";
-        for (int ii = 3; ii < line.Split(' ', StringSplitOptions.RemoveEmptyEntries).Length; ii++)
-        {
-            content += line.Split(' ', StringSplitOptions.RemoveEmptyEntries)[ii];
-            content += " ";
-        }
-        Note bufferNote = new Note(Convert.ToDateTime(file[i].Split(' ', StringSplitOptions.RemoveEmptyEntries)[1]), file[i].Split(' ', StringSplitOptions.RemoveEmptyEntries)[2], content);
-        users[users.Count - 1].notes.Add(bufferNote);
-    }
-    else
-    {
-        Console.WriteLine("Error DB");
-    }
-}
-
-// write on console users and their notes
-Console.WriteLine("\n--- DB ---");
-for (int i = 0; i < users.Count; i++)
-{
-    Console.WriteLine(users[i].GetUser());
-    for (int ii = 0; ii < users[i].notes.Count; ii++)
-    {
-        Console.WriteLine(users[i].notes[ii].GetNote());
-    }
-}
+GetUsers();
 
 string remoteAddress = "127.0.0.1";
 int remotePort = -1;
@@ -84,7 +47,8 @@ void SendMessage()
             if (remoteAddress != "" && remotePort != -1 && buffer != new byte[65000]) // if buffer = default > returns exception
             {
                 Thread.Sleep(20);
-                // reread all users and their notes
+                GetUsers();
+
                 string message = Encoding.Unicode.GetString(buffer); // client request
                 string[] messages = message.Split(' ', StringSplitOptions.RemoveEmptyEntries); // client request split in words
                 string response = "response";
@@ -120,7 +84,7 @@ void SendMessage()
                         {
                             for (int i = 0; i < users.Count; i++)
                             {
-                                if (users[i].Login == messages[1] && users[i].Password == messages[2])
+                                if (users[i].Login == messages[1])
                                 {
                                     response = "REGISTER FAIL";
                                     break;
@@ -231,7 +195,6 @@ void DBUpdate(string message) // read db, rewrite variable, rewrite db
     string[] messages = message.Split(' ', StringSplitOptions.RemoveEmptyEntries); // client's request split in words
     currentUser = new User(messages[1], messages[2]);
 
-    // rewtire variable string[] file 
     file = File.ReadAllLines(path);
     switch (messages[0])
     {
@@ -251,14 +214,17 @@ void DBUpdate(string message) // read db, rewrite variable, rewrite db
             // change file
             for (int i = 0; i < file.Length; i++)
             {
-                if (file[i].Substring(5, currentUser.Login.Length) == currentUser.Login && file[i].Substring(6 + currentUser.Login.Length) == currentUser.Password) 
+                if (file[i] != string.Empty)
                 {
-                    file[i] += "\n" + currentNote.GetNote();
-                    break;
+                    if (file[i].Substring(5, currentUser.Login.Length) == currentUser.Login && file[i].Substring(6 + currentUser.Login.Length) == currentUser.Password)
+                    {
+                        file[i] += "\n" + currentNote.GetNote();
+                        break;
+                    }
                 }
             }
             break;
-        case "UPDATE": // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        case "UPDATE": 
             Note secondNote = new Note(DateTime.Parse("10/10/2010"), "0", "0");
             for (int i = 0; i < messages.Length; i++)
             {
@@ -270,7 +236,6 @@ void DBUpdate(string message) // read db, rewrite variable, rewrite db
                     if (messages[ii] == "SECOND")
                     {
                         secondNoteIndex = ii;
-                        // find second note
                         for (int iii = ii + 4; iii < messages.Length; iii++)
                         {
                             content2 += messages[iii];
@@ -350,7 +315,7 @@ void DBUpdate(string message) // read db, rewrite variable, rewrite db
                             }
                             catch (Exception)
                             {
-                                // line might be bigger and will throw exception OutOfIndex
+                                // line can be bigger and will throw exception OutOfIndex
                             }
                         }
                         break;
@@ -382,15 +347,42 @@ void DBUpdate(string message) // read db, rewrite variable, rewrite db
             index++;
         }
     }
+
     File.WriteAllText(path, string.Empty);
     File.AppendAllLines(path, fileBuffer);
 }
 
-/*
 void GetUsers() 
 {
-    List<User> users = new List<User>();
+    users = new List<User>() { };
 
+    file = File.ReadAllLines(path);
 
+    for (int i = 0; i < file.Length; i++)
+    {
+        if (file[i] == string.Empty)
+        {
+
+        }
+        else if (file[i].Split(' ', StringSplitOptions.RemoveEmptyEntries)[0] == "USER")
+        {
+            users.Add(new User(file[i].Split(' ', StringSplitOptions.RemoveEmptyEntries)[1], file[i].Split(' ', StringSplitOptions.RemoveEmptyEntries)[2]));
+        }
+        else if (file[i].Split(' ', StringSplitOptions.RemoveEmptyEntries)[0] == "NOTE")
+        {
+            string line = file[i];
+            string content = "";
+            for (int ii = 3; ii < line.Split(' ', StringSplitOptions.RemoveEmptyEntries).Length; ii++)
+            {
+                content += line.Split(' ', StringSplitOptions.RemoveEmptyEntries)[ii];
+                content += " ";
+            }
+            Note bufferNote = new Note(Convert.ToDateTime(file[i].Split(' ', StringSplitOptions.RemoveEmptyEntries)[1]), file[i].Split(' ', StringSplitOptions.RemoveEmptyEntries)[2], content);
+            users[users.Count - 1].notes.Add(bufferNote);
+        }
+        else
+        {
+            Console.WriteLine("Error DB");
+        }
+    }
 }
-*/

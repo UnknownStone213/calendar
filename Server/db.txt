@@ -1,5 +1,8 @@
 USER Vlad 123
-NOTE 10/14/2022 topic3 pet my cute cat
-NOTE 10/15/2022 HELP i need HELP 
-USER Edgar 234
+NOTE 10/10/2012 ggg ggg 
+USER Edgar 23
 NOTE 10/13/2022 topic3 note to myself
+USER hi hhh
+NOTE 10/10/2233 gt gttt 
+USER Vlade e
+NOTE 10/12/2022 f fff 
