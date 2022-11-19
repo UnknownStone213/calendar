@@ -70,7 +70,7 @@ namespace Client
                                 {
                                     // maybe send my local notes to user and on server  ????????????? just like user was adding notes offline but when registered notes were added
                                     user = new User(messages[2], messages[3]);
-                                    labelUser.Invoke(delegate { labelUser.Text = "Logged in successfully"; });
+                                    labelUser.Invoke(delegate { labelUser.Text = "Logged in successfully as\n" + user.Login; });
 
                                     // receive notes
                                     //string content = message.Substring(5 + messages[1].Length + 1 + messages[2].Length + 1 + 5 + 10 + 1 + messages[5].Length, message.Length - ...);
@@ -109,7 +109,7 @@ namespace Client
                                 {
                                     user = new User(textBoxLogin.Text, textBoxPassword.Text);
                                     // should i add local notes to registered account? if yes i also should add notes to DB
-                                    labelUser.Invoke(delegate { labelUser.Text = "Registered successfully"; });
+                                    labelUser.Invoke(delegate { labelUser.Text = "Registered successfully as\n" + user.Login; });
                                 }
                                 else if(messages[1] == "FAIL")
                                 {
