@@ -204,7 +204,7 @@ void ReceiveMessage()
     }
 }
 
-void DBUpdate(string message) // read file, create/update/delete note, rewrite file (local and then in db), show on console, send to user outside this method!!!
+void DBUpdate(string message) // read file, rewrite file (local and then in db)
 {
     string[] messages = message.Split(' ', StringSplitOptions.RemoveEmptyEntries); // words
     currentUser = new User(messages[1], messages[2]);
@@ -220,7 +220,6 @@ void DBUpdate(string message) // read file, create/update/delete note, rewrite f
         }
         currentNote = new Note(Convert.ToDateTime(messages[4]), messages[5], content);
     }
-    // Console.WriteLine("\ncurrentUser=" + currentUser.GetUser() + "\ncurrentNote=" + currentNote.GetNote());
 
     // rewtire local variable file 
     file = File.ReadAllLines(path);

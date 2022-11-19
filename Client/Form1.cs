@@ -197,7 +197,7 @@ namespace Client
             {
                 if (textBoxNoteCaption.Text.IndexOf(' ') != -1)
                 {
-                    MessageBox.Show("Note's caption can only be one word");
+                    MessageBox.Show("Note's caption can only be one word (delete gaps)");
                 }
                 else 
                 {
@@ -205,6 +205,10 @@ namespace Client
                     string message = "CREATE " + user.Login + " " + user.Password + " " + currentNote.GetNote();
                     byte[] data = Encoding.Unicode.GetBytes(message);
                     udpClient.Send(data, data.Length, remoteAddress, remotePort);
+                    // clean up Note space on the left
+                    textBoxNoteDate.Invoke(delegate { textBoxNoteDate.Text = ""; });
+                    textBoxNoteCaption.Invoke(delegate { textBoxNoteCaption.Text = ""; });
+                    textBoxNoteContent.Invoke(delegate { textBoxNoteContent.Text = ""; });
                 }
             }
             catch (Exception ex)
@@ -235,6 +239,22 @@ namespace Client
                 }
             }
             currentNote = user.notes[currentNoteIndex];
+            // show selected note on the left
+            textBoxNoteDate.Invoke(delegate { textBoxNoteDate.Text = user.notes[currentNoteIndex].Date.ToString(); });
+            textBoxNoteCaption.Invoke(delegate { textBoxNoteCaption.Text = user.notes[currentNoteIndex].Caption; });
+            textBoxNoteContent.Invoke(delegate { textBoxNoteContent.Text = user.notes[currentNoteIndex].Content; });
+        }
+
+        private void buttonLogout_Click(object sender, EventArgs e)
+        {
+            if (user.Login != "0" && user.Password != "0")
+            {
+                user = new User("0", "0");
+                NotesUpdate();
+                labelUser.Invoke(delegate { labelUser.Text = "Log in or register"; });
+                textBoxLogin.Invoke(delegate { textBoxLogin.Text = ""; });
+                textBoxPassword.Invoke(delegate { textBoxPassword.Text = ""; });
+            }
         }
     }
 }

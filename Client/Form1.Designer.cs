@@ -48,6 +48,7 @@
             this.buttonNoteUpdate = new System.Windows.Forms.Button();
             this.buttonNoteDelete = new System.Windows.Forms.Button();
             this.monthCalendar1 = new System.Windows.Forms.MonthCalendar();
+            this.buttonLogout = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // textBoxLogin
@@ -103,7 +104,7 @@
             // 
             // buttonLogin
             // 
-            this.buttonLogin.Location = new System.Drawing.Point(1023, 210);
+            this.buttonLogin.Location = new System.Drawing.Point(1001, 210);
             this.buttonLogin.Name = "buttonLogin";
             this.buttonLogin.Size = new System.Drawing.Size(112, 34);
             this.buttonLogin.TabIndex = 6;
@@ -224,11 +225,22 @@
             this.monthCalendar1.Name = "monthCalendar1";
             this.monthCalendar1.TabIndex = 20;
             // 
+            // buttonLogout
+            // 
+            this.buttonLogout.Location = new System.Drawing.Point(1119, 210);
+            this.buttonLogout.Name = "buttonLogout";
+            this.buttonLogout.Size = new System.Drawing.Size(112, 34);
+            this.buttonLogout.TabIndex = 21;
+            this.buttonLogout.Text = "Log out";
+            this.buttonLogout.UseVisualStyleBackColor = true;
+            this.buttonLogout.Click += new System.EventHandler(this.buttonLogout_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(10F, 25F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1247, 654);
+            this.Controls.Add(this.buttonLogout);
             this.Controls.Add(this.monthCalendar1);
             this.Controls.Add(this.buttonNoteDelete);
             this.Controls.Add(this.buttonNoteUpdate);
@@ -279,5 +291,6 @@
         private Button buttonNoteUpdate;
         private Button buttonNoteDelete;
         private MonthCalendar monthCalendar1;
+        private Button buttonLogout;
     }
 }
