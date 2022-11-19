@@ -202,7 +202,7 @@ namespace Client
                 }
                 else 
                 {
-                    currentNote = new Note(DateTime.Parse(textBoxNoteDate.Text), textBoxNoteCaption.Text, textBoxNoteContent.Text);
+                    currentNote = new Note(DateTime.Parse(textBoxNoteDate.Text), textBoxNoteCaption.Text, textBoxNoteContent.Text); 
                     string message = "CREATE " + user.Login + " " + user.Password + " " + currentNote.GetNote();
                     byte[] data = Encoding.Unicode.GetBytes(message);
                     udpClient.Send(data, data.Length, remoteAddress, remotePort);
@@ -219,9 +219,31 @@ namespace Client
             }
         }
 
-        private void buttonNoteUpdate_Click(object sender, EventArgs e) // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        private void buttonNoteUpdate_Click(object sender, EventArgs e) // !!!!!!!!!!!!!!!!
         {
+            if (listBoxNotes.SelectedItem != null && listBoxNotes.SelectedIndex != -1)
+            {
+                currentNote = new Note(DateTime.Parse(textBoxNoteDate.Text), textBoxNoteCaption.Text, textBoxNoteContent.Text);
 
+                // update on client 
+                for (int i = 0; i < user.notes.Count; i++)
+                {
+                    if (user.notes[i].GetNote().Substring(5) == listBoxNotes.SelectedItem.ToString())
+                    {
+                        // update on server 
+                        if (user.Login != "0" && user.Password != "0")
+                        {
+                            string message = "UPDATE " + user.Login + " " + user.Password + " FIRST " + user.notes[i].GetNote() + " SECOND " + currentNote.GetNote();
+                            byte[] data = Encoding.Unicode.GetBytes(message);
+                            udpClient.Send(data, data.Length, remoteAddress, remotePort);
+                        }
+
+                        user.notes[i] = currentNote;
+                        break;
+                    }
+                }
+            }
+            NotesUpdate();
         }
 
         private void buttonNoteDelete_Click(object sender, EventArgs e) 
@@ -280,6 +302,11 @@ namespace Client
                 labelUser.Invoke(delegate { labelUser.Text = "Log in or register"; });
                 textBoxLogin.Invoke(delegate { textBoxLogin.Text = ""; });
                 textBoxPassword.Invoke(delegate { textBoxPassword.Text = ""; });
+
+                // clean up Note space on the left
+                textBoxNoteDate.Invoke(delegate { textBoxNoteDate.Text = ""; });
+                textBoxNoteCaption.Invoke(delegate { textBoxNoteCaption.Text = ""; });
+                textBoxNoteContent.Invoke(delegate { textBoxNoteContent.Text = ""; });
             }
         }
     }

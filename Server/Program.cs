@@ -15,7 +15,7 @@ string path = @"C:\Work\vs\calendar\Server\db.txt";
 string[] file = File.ReadAllLines(path);
 
 User currentUser;
-Note currentNote;
+Note currentNote = new Note(DateTime.Parse("10/10/2010"), "0", "0");
 
 for (int i = 0; i < file.Length; i++)
 {
@@ -46,6 +46,7 @@ for (int i = 0; i < file.Length; i++)
 }
 
 // write on console users and their notes
+Console.WriteLine("\n--- DB ---");
 for (int i = 0; i < users.Count; i++)
 {
     Console.WriteLine(users[i].GetUser());
@@ -83,6 +84,7 @@ void SendMessage()
             if (remoteAddress != "" && remotePort != -1 && buffer != new byte[65000]) // if buffer = default > returns exception
             {
                 Thread.Sleep(20);
+                // reread all users and their notes
                 string message = Encoding.Unicode.GetString(buffer); // client request
                 string[] messages = message.Split(' ', StringSplitOptions.RemoveEmptyEntries); // client request split in words
                 string response = "response";
@@ -146,8 +148,16 @@ void SendMessage()
                             response = "CREATE SUCCESS " + currentNote.GetNote();
                         }
                         break;
-                    case "UPDATE": // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                        // send client currentNote and make client rewrite user.notes[index]
+                    case "UPDATE": // UPDATE LOGIN PASSWORD FIRST NOTE date caption content SECOND NOTE ... d c c !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                        if (messages[3] != "FIRST" || message.IndexOf("SECOND") == -1)
+                        {
+                            response = "UPDATE FAIL";
+                        }
+                        else
+                        {
+                            DBUpdate(message);
+                            response = "UPDATE SUCCESS " + currentNote.GetNote();
+                        }
                         break;
                     case "DELETE": // DELETE LOGIN PASSWORD NOTE date caption content
                         if (messages[3] != "NOTE")
@@ -221,23 +231,24 @@ void DBUpdate(string message) // read db, rewrite variable, rewrite db
     string[] messages = message.Split(' ', StringSplitOptions.RemoveEmptyEntries); // client's request split in words
     currentUser = new User(messages[1], messages[2]);
 
-    currentNote = new Note(DateTime.Parse("10/10/2010"), "0", "0");
-    for (int i = 0; i < messages.Length; i++)
-    {
-        string content = "";
-        for (int ii = 6; ii < messages.Length; ii++)
-        {
-            content += messages[ii];
-            content += " ";
-        }
-        currentNote = new Note(Convert.ToDateTime(messages[4]), messages[5], content);
-    }
-
     // rewtire variable string[] file 
     file = File.ReadAllLines(path);
     switch (messages[0])
     {
         case "CREATE":
+            currentNote = new Note(DateTime.Parse("10/10/2010"), "0", "0");
+            for (int i = 0; i < messages.Length; i++)
+            {
+                string content = "";
+                for (int ii = 6; ii < messages.Length; ii++)
+                {
+                    content += messages[ii];
+                    content += " ";
+                }
+                currentNote = new Note(Convert.ToDateTime(messages[4]), messages[5], content);
+            }
+
+            // change file
             for (int i = 0; i < file.Length; i++)
             {
                 if (file[i].Substring(5, currentUser.Login.Length) == currentUser.Login && file[i].Substring(6 + currentUser.Login.Length) == currentUser.Password) 
@@ -247,9 +258,79 @@ void DBUpdate(string message) // read db, rewrite variable, rewrite db
                 }
             }
             break;
-        case "UPDATE":
+        case "UPDATE": // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            Note secondNote = new Note(DateTime.Parse("10/10/2010"), "0", "0");
+            for (int i = 0; i < messages.Length; i++)
+            {
+                int secondNoteIndex = -1;
+                string content = "";
+                string content2 = "";
+                for (int ii = 7; ii < messages.Length; ii++)
+                {
+                    if (messages[ii] == "SECOND")
+                    {
+                        secondNoteIndex = ii;
+                        // find second note
+                        for (int iii = ii + 4; iii < messages.Length; iii++)
+                        {
+                            content2 += messages[iii];
+                            content2 += " ";
+                        }
+                        secondNote = new Note(DateTime.Parse(messages[secondNoteIndex + 2]), messages[secondNoteIndex + 3], content2);
+                        break;
+                    }
+                    else
+                    {
+                        content += messages[ii];
+                        content += " ";
+
+                    }
+                }
+                currentNote = new Note(Convert.ToDateTime(messages[5]), messages[6], content);
+                break;
+            }
+
+            // change file
+            for (int i = 0; i < file.Length; i++)
+            {
+                if (file[i] != string.Empty && file[i].Substring(0, 4) == "USER")
+                {
+                    if (file[i].Substring(5, currentUser.Login.Length) == currentUser.Login && file[i].Substring(6 + currentUser.Login.Length) == currentUser.Password)
+                    {
+                        for (int ii = i + 1; ii < file.Length; ii++)
+                        {
+                            try
+                            {
+                                // last && ( _ || _ ) is me solving problem with extra space at the end of currentNote.Content
+                                if (currentNote.Date.ToString("MM/dd/yyyy") == file[ii].Substring(5, 10) && currentNote.Caption == file[ii].Substring(16, currentNote.Caption.Length) && (currentNote.Content == file[ii].Substring(17 + currentNote.Caption.Length) || currentNote.Content.Substring(0, currentNote.Content.Length - 1) == file[ii].Substring(17 + currentNote.Caption.Length)))
+                                {
+                                    file[ii] = secondNote.GetNote();
+                                    break;
+                                }
+                            }
+                            catch (Exception)
+                            {
+                                // line might be bigger and will throw exception OutOfIndex
+                            }
+                        }
+                    }
+                }
+            }
             break;
         case "DELETE":
+            currentNote = new Note(DateTime.Parse("10/10/2010"), "0", "0");
+            for (int i = 0; i < messages.Length; i++)
+            {
+                string content = "";
+                for (int ii = 6; ii < messages.Length; ii++)
+                {
+                    content += messages[ii];
+                    content += " ";
+                }
+                currentNote = new Note(Convert.ToDateTime(messages[4]), messages[5], content);
+            }
+
+            // change file
             for (int i = 0; i < file.Length; i++)
             {
                 if (file[i] != string.Empty && file[i].Substring(0, 4) == "USER")
@@ -269,7 +350,7 @@ void DBUpdate(string message) // read db, rewrite variable, rewrite db
                             }
                             catch (Exception)
                             {
-
+                                // line might be bigger and will throw exception OutOfIndex
                             }
                         }
                         break;
@@ -282,7 +363,7 @@ void DBUpdate(string message) // read db, rewrite variable, rewrite db
             break;
     }
 
-    // rewrite db 
+    // rewrite db (+ delete empty lines)
     int amountNotEmpty = 0;
     for (int i = 0; i < file.Length; i++)
     {
@@ -304,3 +385,12 @@ void DBUpdate(string message) // read db, rewrite variable, rewrite db
     File.WriteAllText(path, string.Empty);
     File.AppendAllLines(path, fileBuffer);
 }
+
+/*
+void GetUsers() 
+{
+    List<User> users = new List<User>();
+
+
+}
+*/
