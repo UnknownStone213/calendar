@@ -47,7 +47,7 @@
             this.buttonNoteCreate = new System.Windows.Forms.Button();
             this.buttonNoteUpdate = new System.Windows.Forms.Button();
             this.buttonNoteDelete = new System.Windows.Forms.Button();
-            this.monthCalendar1 = new System.Windows.Forms.MonthCalendar();
+            this.monthCalendar = new System.Windows.Forms.MonthCalendar();
             this.buttonLogout = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
@@ -219,11 +219,11 @@
             this.buttonNoteDelete.UseVisualStyleBackColor = true;
             this.buttonNoteDelete.Click += new System.EventHandler(this.buttonNoteDelete_Click);
             // 
-            // monthCalendar1
+            // monthCalendar
             // 
-            this.monthCalendar1.Location = new System.Drawing.Point(883, 346);
-            this.monthCalendar1.Name = "monthCalendar1";
-            this.monthCalendar1.TabIndex = 20;
+            this.monthCalendar.Location = new System.Drawing.Point(883, 346);
+            this.monthCalendar.Name = "monthCalendar";
+            this.monthCalendar.TabIndex = 20;
             // 
             // buttonLogout
             // 
@@ -241,7 +241,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1247, 654);
             this.Controls.Add(this.buttonLogout);
-            this.Controls.Add(this.monthCalendar1);
+            this.Controls.Add(this.monthCalendar);
             this.Controls.Add(this.buttonNoteDelete);
             this.Controls.Add(this.buttonNoteUpdate);
             this.Controls.Add(this.buttonNoteCreate);
@@ -290,7 +290,7 @@
         private Button buttonNoteCreate;
         private Button buttonNoteUpdate;
         private Button buttonNoteDelete;
-        private MonthCalendar monthCalendar1;
+        private MonthCalendar monthCalendar;
         private Button buttonLogout;
     }
 }

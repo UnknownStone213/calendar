@@ -112,7 +112,7 @@ void SendMessage()
                             response = "CREATE SUCCESS " + currentNote.GetNote();
                         }
                         break;
-                    case "UPDATE": // UPDATE LOGIN PASSWORD FIRST NOTE date caption content SECOND NOTE ... d c c !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                    case "UPDATE": // UPDATE LOGIN PASSWORD FIRST NOTE date caption content SECOND NOTE ... d c c 
                         if (messages[3] != "FIRST" || message.IndexOf("SECOND") == -1)
                         {
                             response = "UPDATE FAIL";
@@ -140,7 +140,7 @@ void SendMessage()
                 }
                 byte[] data = Encoding.Unicode.GetBytes(response);
                 sender.Send(data, data.Length, remoteAddress, remotePort);
-                Console.WriteLine("{0} Send response {1}:{2}\n{3}", DateTime.Now.ToLongTimeString(), remoteAddress, remotePort, response);
+                Console.WriteLine("{0} Send response to {1}:{2}\n{3}", DateTime.Now.ToLongTimeString(), remoteAddress, remotePort, response);
 
                 // reset and wait for the next client-request
                 response = "";
@@ -168,14 +168,14 @@ void ReceiveMessage()
 
     try
     {
-        Console.WriteLine("\nUdp server " + localPort.ToString() + " started...");
+        Console.WriteLine("Udp server " + localPort.ToString() + " started...");
         while (true)
         {
             byte[] data = receiver.Receive(ref remoteEndPoint);
             remoteAddress = remoteEndPoint.Address.ToString();
             remotePort = remoteEndPoint.Port;
             string message = Encoding.Unicode.GetString(data);
-            Console.WriteLine("{0} Received message {1}:{2}\n{3}", DateTime.Now.ToLongTimeString(), remoteAddress, remotePort, message);
+            Console.WriteLine("{0} Received message from {1}:{2}\n{3}", DateTime.Now.ToLongTimeString(), remoteAddress, remotePort, message);
             buffer = data;
         }
     }

@@ -151,6 +151,7 @@ namespace Client
                                 break;
                         }
                         listBoxNotes.Invoke(delegate { NotesUpdate(); }); // update my notes after receiving server response
+                        CalendarUpdate();
                     }
                 }
                 catch (Exception ex)
@@ -308,6 +309,16 @@ namespace Client
                 textBoxNoteCaption.Invoke(delegate { textBoxNoteCaption.Text = ""; });
                 textBoxNoteContent.Invoke(delegate { textBoxNoteContent.Text = ""; });
             }
+        }
+
+        private void CalendarUpdate() // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        {
+            monthCalendar.Invoke(delegate { monthCalendar.RemoveAllBoldedDates(); });
+            for (int i = 0; i < user.notes.Count; i++)
+            {
+                monthCalendar.Invoke(delegate { monthCalendar.AddBoldedDate(user.notes[i].Date); });
+            }
+            monthCalendar.Invoke(delegate { monthCalendar.UpdateBoldedDates(); });
         }
     }
 }
